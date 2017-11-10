@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GifTastic</title>
+	<style type="text/css">
+		button,
+		div,
+		form,
+		input{
+			margin:20px;
+		}
+	</style>
+</head>
+<body>
+    
+    <div class="container" style="padding-left: 220px;">
+    	<h1 style="padding-left: 280px">Superheroes Giphy</h1>
+    	<div id="buttons-view"></div>
+    
+    <!-- button to add new superhero -->
+    <form id="superhero-form">
+      <label id="add" for="superhero-input" style="padding-left: 300px">Add a Superhero</label>
+      <input type="text" id="superhero-input"><br>
+      <input id="add-superhero" type="submit" value="Submit" style="margin-left: 400px">
+    </form>
+
+    <br>
+    <br>
+     <div id="gifsView"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    	//creating an arry for the superheros
+    	var topics = ["batman", "spiderman", "wonderwomen", "superman", "catwoman", "ironman","antman"];
+
+		function makeButtons(){
+			$("#buttons-view").empty();
+			// creating a for loop to go through the topics array
+			for(var i = 0; i < topics.length; i++){
+				var a = $("<button>")
+				a.addClass("superhero");
+				a.attr("data-name", topics[i]);
+				a.text(topics[i]);
+				$("#buttons-view").append(a);
+			}
+		}
+
+                $("#add-superhero").on("click", function(){
+                	var superhero = $("#superhero-input").val().trim();
+                	topics.push(superhero);
+                	makeButtons();
+                	return false;
+                })
+
+                function displayGifs(){
+                var superhero = $(this).attr("data-name");
+    		    var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + superhero + "&api_key=MxrM5zad2hyBT2nYddtPhslSr0rDAlXx&limit=10";
+
+                $.ajax({
+                 url: queryURL,
+                 method: "GET"
+                }).done(function (response) {
+			    console.log(response.data);
+
+                var results = response.data;
+
+                for (var i = 0; i < results.length; i++){
+                var gifDiv = $('<div class=gifs>');
+				var superheroGif = $('<img>');
+					superheroGif.attr('src', results[i].images.fixed_height_still.url);
+
+					superheroGif.attr('title', "Rating: " + results[i].rating);
+					superheroGif.attr('data-still', results[i].images.fixed_height_still.url);
+					superheroGif.attr('data-state', 'still');
+					superheroGif.addClass('gif');
+					superheroGif.attr('data-animate', results[i].images.fixed_height.url);
+				gifDiv.append(superheroGif)
+
+                $("#gifsView").prepend(gifDiv);
+
+                }
+    		});
+        }
+
+        $(document).on('click', '.gif', function(){
+	var state = $(this).attr('data-state');
+		if ( state == 'still'){
+                $(this).attr('src', $(this).data('animate'));
+                $(this).attr('data-state', 'animate');
+            }else{
+                $(this).attr('src', $(this).data('still'));
+                $(this).attr('data-state', 'still');
+            };
+});
+
+$(document).on("click", ".superhero", displayGifs);
+
+makeButtons();
+
+    </script>
+</body>
+</html>
