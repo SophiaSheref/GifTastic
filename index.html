@@ -64,9 +64,10 @@
 			    console.log(response.data);
 
                 var results = response.data;
-
+                var rating = response.data["0"].rating;
                 for (var i = 0; i < results.length; i++){
                 var gifDiv = $('<div class=gifs>');
+		var pRat = $("<p>").text("Rating: " + rating);
 				var superheroGif = $('<img>');
 					superheroGif.attr('src', results[i].images.fixed_height_still.url);
 
@@ -75,7 +76,7 @@
 					superheroGif.attr('data-state', 'still');
 					superheroGif.addClass('gif');
 					superheroGif.attr('data-animate', results[i].images.fixed_height.url);
-				gifDiv.append(superheroGif)
+				gifDiv.append(superheroGif, pRat)
 
                 $("#gifsView").prepend(gifDiv);
 
